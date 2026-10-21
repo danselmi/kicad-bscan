@@ -1,0 +1,10 @@
+Protobuf definitions of the KiCad IPC API.
+
+Source:  https://gitlab.com/kicad/code/kicad (mirror: github.com/KiCad/kicad-source-mirror)
+Branch:  10.0
+Path:    api/proto
+Commit:  72bec980c6d6cb43a156783015607056ada916b0
+Date:    Sat Oct 10 19:43:10 2026 +0200
+
+License: GPL-3.0-or-later (see the header of each .proto file).
+Update:  copy api/proto of a newer 10.0 (or later) checkout over this directory.

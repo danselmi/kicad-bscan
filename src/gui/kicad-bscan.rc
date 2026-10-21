@@ -1,0 +1,17 @@
+// Windows resources of the plugin window.
+//
+// The manifest selects version 6 of the common controls library
+// (comctl32.dll). Without it Windows loads version 5, which lacks functions
+// wxWidgets needs (e.g. GetWindowSubclass), and the program does not start.
+// It also declares per-monitor DPI awareness (v2).
+//
+// The icon is the one Explorer shows for kicad-bscan.exe: the first icon
+// resource by name, hence "aaaa" (wx.rc has icons of its own). The window
+// and taskbar icon is set at run time (app.cpp).
+
+aaaa ICON "icons/kicad-bscan.ico"
+
+#define wxUSE_RC_MANIFEST 1
+#define wxUSE_DPI_AWARE_MANIFEST 2
+
+#include "wx/msw/wx.rc"

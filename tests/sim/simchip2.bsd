@@ -1,0 +1,94 @@
+-- Second test device for kicad-bscan (OTHER in jtag_sim.py): the same pins
+-- and cells as simchip.bsd, another IR length and IDCODE.
+
+entity SIMCHIP2 is
+
+  generic (PHYSICAL_PIN_MAP : string := "QFN16");
+
+  port (
+    IN0  : in    bit;
+    IN1  : in    bit;
+    OUT0 : out   bit;
+    IO0  : inout bit;
+    A1   : in    bit;
+    TCK  : in    bit;
+    TMS  : in    bit;
+    TDI  : in    bit;
+    TDO  : out   bit;
+    VCC  : linkage bit_vector (0 to 1);
+    GND  : linkage bit
+  );
+
+  use STD_1149_1_2001.all;
+
+  attribute COMPONENT_CONFORMANCE of SIMCHIP2 : entity is "STD_1149_1_2001";
+
+  attribute PIN_MAP of SIMCHIP2 : entity is PHYSICAL_PIN_MAP;
+
+  constant QFN16 : PIN_MAP_STRING :=
+    "IN0  : 1,"  &
+    "IN1  : 2,"  &
+    "OUT0 : 3,"  &
+    "IO0  : 4,"  &
+    "A1   : 5,"  &
+    "TCK  : 9,"  &
+    "TMS  : 10," &
+    "TDI  : 11," &
+    "TDO  : 12," &
+    "VCC  : (13, 14)," &
+    "GND  : 15";
+
+  constant BGA9 : PIN_MAP_STRING :=
+    "IN0  : A1," &
+    "IN1  : A2," &
+    "OUT0 : A3," &
+    "IO0  : B1," &
+    "A1   : C3," &
+    "TCK  : B2," &
+    "TMS  : B3," &
+    "TDI  : C1," &
+    "TDO  : C2," &
+    "VCC  : (D1, D2)," &
+    "GND  : D3";
+
+  attribute TAP_SCAN_IN    of TDI : signal is true;
+  attribute TAP_SCAN_MODE  of TMS : signal is true;
+  attribute TAP_SCAN_OUT   of TDO : signal is true;
+  attribute TAP_SCAN_CLOCK of TCK : signal is (10.0e6, BOTH);
+
+  attribute INSTRUCTION_LENGTH of SIMCHIP2 : entity is 5;
+
+  attribute INSTRUCTION_OPCODE of SIMCHIP2 : entity is
+    "EXTEST         (00000)," &
+    "SAMPLE         (00001)," &
+    "PRELOAD        (00001)," &
+    "IDCODE         (01110)," &
+    "BYPASS         (11111)";
+
+  attribute INSTRUCTION_CAPTURE of SIMCHIP2 : entity is "00001";
+
+  attribute IDCODE_REGISTER of SIMCHIP2 : entity is
+    "0100"             &  -- version
+    "1011101000000000" &  -- part number 0xBA00
+    "01000111011"      &  -- manufacturer 0x23B
+    "1";
+
+  attribute REGISTER_ACCESS of SIMCHIP2 : entity is
+    "BOUNDARY (EXTEST, SAMPLE, PRELOAD)," &
+    "DEVICE_ID (IDCODE)," &
+    "BYPASS (BYPASS)";
+
+  attribute BOUNDARY_LENGTH of SIMCHIP2 : entity is 8;
+
+  attribute BOUNDARY_REGISTER of SIMCHIP2 : entity is
+  --  num  cell   port    function  safe ccell disval rslt
+    "  0  (BC_1, IN0,    input,    X),"              &
+    "  1  (BC_1, IN1,    input,    X),"              &
+    "  2  (BC_1, *,      control,  0),"              &
+    "  3  (BC_1, OUT0,   output3,  X,   2,    0,     Z)," &
+    "  4  (BC_1, *,      control,  0),"              &
+    "  5  (BC_7, IO0,    bidir,    X,   4,    0,     Z)," &
+    "  6  (BC_1, A1,     input,    X),"              &
+    "  7  (BC_1, *,      internal, X)";
+
+end SIMCHIP2;

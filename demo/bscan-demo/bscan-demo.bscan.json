@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "openocd": {
+    "host": "127.0.0.1",
+    "port": 6666
+  },
+  "taps": [
+    {
+      "tap": "mcu.tap",
+      "idcode": "0x1d3c10ef",
+      "reference": "U1",
+      "bsdl": "bsdl/bsdemo_m32.bsd",
+      "extest_start": {
+        "11": "1"
+      }
+    },
+    {
+      "tap": "fpga.tap",
+      "idcode": "0x03a420ef",
+      "reference": "U2",
+      "bsdl": "bsdl/bsdemo_f48.bsd"
+    }
+  ],
+  "watch": [
+    {
+      "reference": "U2",
+      "pad": "29",
+      "net": "LED1"
+    },
+    {
+      "reference": "U1",
+      "pad": "7",
+      "net": "STAT"
+    },
+    {
+      "reference": "U2",
+      "pad": "16",
+      "net": "CLK"
+    },
+    {
+      "reference": "U1",
+      "pad": "25",
+      "net": "IRQ"
+    },
+    {
+      "reference": "U1",
+      "pad": "2",
+      "net": "nRESET"
+    },
+    {
+      "reference": "U1",
+      "pad": "6",
+      "net": "BTN"
+    }
+  ],
+  "bsdl_dirs": [
+    "bsdl"
+  ],
+  "interconnect_include": []
+}

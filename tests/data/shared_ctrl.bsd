@@ -1,0 +1,45 @@
+-- Test device for EXTEST planning (unit tests only, no simulator):
+-- OUTA and OUTB share control cell 0; OUTC is a two-state output without
+-- output enable; OUTD has its own control cell with disable value 1.
+
+entity SHARED is
+  generic (PHYSICAL_PIN_MAP : string := "PKG");
+
+  port (
+    OUTA : out bit;
+    OUTB : out bit;
+    OUTC : out bit;
+    OUTD : out bit;
+    TCK  : in  bit;
+    TMS  : in  bit;
+    TDI  : in  bit;
+    TDO  : out bit
+  );
+
+  use STD_1149_1_2001.all;
+
+  attribute PIN_MAP of SHARED : entity is PHYSICAL_PIN_MAP;
+
+  constant PKG : PIN_MAP_STRING :=
+    "OUTA : 1, OUTB : 2, OUTC : 3, OUTD : 4, TCK : 5, TMS : 6, TDI : 7, TDO : 8";
+
+  attribute TAP_SCAN_IN    of TDI : signal is true;
+  attribute TAP_SCAN_MODE  of TMS : signal is true;
+  attribute TAP_SCAN_OUT   of TDO : signal is true;
+  attribute TAP_SCAN_CLOCK of TCK : signal is (10.0e6, BOTH);
+
+  attribute INSTRUCTION_LENGTH of SHARED : entity is 2;
+  attribute INSTRUCTION_OPCODE of SHARED : entity is
+    "EXTEST (00), SAMPLE (01), BYPASS (11)";
+  attribute INSTRUCTION_CAPTURE of SHARED : entity is "01";
+
+  attribute BOUNDARY_LENGTH of SHARED : entity is 6;
+  attribute BOUNDARY_REGISTER of SHARED : entity is
+    "0 (BC_1, *,    control, 0),"             &
+    "1 (BC_1, OUTA, output3, X, 0, 0, Z),"    &
+    "2 (BC_1, OUTB, output3, 1, 0, 0, Z),"    &
+    "3 (BC_1, OUTC, output2, 0),"             &
+    "4 (BC_1, *,    control, 1),"             &
+    "5 (BC_1, OUTD, output3, X, 4, 1, Z)";
+
+end SHARED;

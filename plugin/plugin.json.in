@@ -1,0 +1,21 @@
+{
+  "$schema": "https://go.kicad.org/api/schemas/v1",
+  "identifier": "@BSCAN_PLUGIN_ID@",
+  "name": "@BSCAN_PLUGIN_NAME@",
+  "description": "Boundary scan in the PCB editor: live pin values and pin driving (EXTEST) via OpenOCD",
+  "runtime": {
+    "type": "exec"
+  },
+  "actions": [
+    {
+      "identifier": "show-window",
+      "name": "Boundary Scan",
+      "description": "Open the boundary-scan window",
+      "show-button": true,
+      "scopes": [ "pcb" ],
+      "entrypoint": "@BSCAN_ENTRYPOINT@",
+      "icons-light": [ "icons/bscan-24.png", "icons/bscan-48.png" ],
+      "icons-dark":  [ "icons/bscan-dark-24.png", "icons/bscan-dark-48.png" ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- kicad-bscan icon: chip with pins on all sides and a boundary-scan path.
+       Export: see doc/DEVELOPMENT.md (Icons). -->
+  <g fill="#d7d7d7">
+    <!-- chip body (hollow) -->
+    <path fill-rule="evenodd" d="M6 6h12v12H6z M7.6 7.6v8.8h8.8V7.6z"/>
+    <!-- pins, 3 per side -->
+    <rect x="7.6" y="2.5" width="1.8" height="3.5"/>
+    <rect x="7.6" y="18" width="1.8" height="3.5"/>
+    <rect x="2.5" y="7.6" width="3.5" height="1.8"/>
+    <rect x="18" y="7.6" width="3.5" height="1.8"/>
+    <rect x="11.1" y="2.5" width="1.8" height="3.5"/>
+    <rect x="11.1" y="18" width="1.8" height="3.5"/>
+    <rect x="2.5" y="11.1" width="3.5" height="1.8"/>
+    <rect x="18" y="11.1" width="3.5" height="1.8"/>
+    <rect x="14.6" y="2.5" width="1.8" height="3.5"/>
+    <rect x="14.6" y="18" width="1.8" height="3.5"/>
+    <rect x="2.5" y="14.6" width="3.5" height="1.8"/>
+    <rect x="18" y="14.6" width="3.5" height="1.8"/>
+  </g>
+  <!-- scan path -->
+  <path fill="#5fa5f5" fill-rule="evenodd" d="M8.2 8.2h7.6v7.6H8.2z M9.6 9.6v4.8h4.8V9.6z"/>
+</svg>

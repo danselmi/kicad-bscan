@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- Push pin, 16 x 16: not on top, for dark themes -->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g fill="#e6e6e6" transform="rotate(45 8 8)">
+    <rect x="4.5" y="1" width="7" height="2.5" rx="1"/>
+    <rect x="6" y="3.5" width="4" height="4.5"/>
+    <rect x="3.5" y="8" width="9" height="2" rx="1"/>
+    <rect x="7.5" y="10" width="1" height="5"/>
+  </g>
+</svg>

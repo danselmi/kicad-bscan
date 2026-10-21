@@ -1,0 +1,6 @@
+# written by KiCad when the project is opened
+bscan-demo/*.kicad_prl
+bscan-demo/*-backups/
+bscan-demo/fp-info-cache
+bscan-demo/*.lck
+bscan-demo/~*

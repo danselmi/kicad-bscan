@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Boundary Scan (KiCad)
+Comment=Boundary scan in the KiCad PCB editor (started from KiCad)
+Exec=@BSCAN_EXEC@
+Icon=kicad-bscan
+StartupWMClass=kicad-bscan
+Terminal=false
+NoDisplay=true

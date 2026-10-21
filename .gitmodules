@@ -1,0 +1,3 @@
+[submodule "third_party/libbsdl"]
+	path = third_party/libbsdl
+	url = https://github.com/danselmi/libbsdl.git

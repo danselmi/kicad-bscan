@@ -1,0 +1,1326 @@
+{
+ "chain": [
+  {
+   "ref": "U2",
+   "tap": "fpga.tap",
+   "irlen": 6,
+   "idcode": 61087983,
+   "opcodes": {
+    "100110": "EXTEST",
+    "000001": "SAMPLE",
+    "001001": "IDCODE",
+    "001010": "HIGHZ",
+    "001111": "CLAMP",
+    "111111": "BYPASS"
+   },
+   "cells": [
+    {
+     "num": 0,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 1,
+     "type": "BC_7",
+     "port": "IO_L1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 0,
+     "dis": 0
+    },
+    {
+     "num": 2,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 3,
+     "type": "BC_7",
+     "port": "IO_L2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 2,
+     "dis": 0
+    },
+    {
+     "num": 4,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 5,
+     "type": "BC_7",
+     "port": "IO_L3",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 4,
+     "dis": 0
+    },
+    {
+     "num": 6,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 7,
+     "type": "BC_7",
+     "port": "IO_L4",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 6,
+     "dis": 0
+    },
+    {
+     "num": 8,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 9,
+     "type": "BC_7",
+     "port": "IO_L5",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 8,
+     "dis": 0
+    },
+    {
+     "num": 10,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 11,
+     "type": "BC_7",
+     "port": "IO_L6",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 10,
+     "dis": 0
+    },
+    {
+     "num": 12,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 13,
+     "type": "BC_7",
+     "port": "IO_L7",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 12,
+     "dis": 0
+    },
+    {
+     "num": 14,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 15,
+     "type": "BC_7",
+     "port": "IO_L8",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 14,
+     "dis": 0
+    },
+    {
+     "num": 16,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 17,
+     "type": "BC_7",
+     "port": "IO_B1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 16,
+     "dis": 0
+    },
+    {
+     "num": 18,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 19,
+     "type": "BC_7",
+     "port": "IO_B2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 18,
+     "dis": 0
+    },
+    {
+     "num": 20,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 21,
+     "type": "BC_7",
+     "port": "IO_B3",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 20,
+     "dis": 0
+    },
+    {
+     "num": 22,
+     "type": "BC_1",
+     "port": "GCLK",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 23,
+     "type": "BC_1",
+     "port": "PROG_B",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 24,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 25,
+     "type": "BC_7",
+     "port": "IO_R1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 24,
+     "dis": 0
+    },
+    {
+     "num": 26,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 27,
+     "type": "BC_7",
+     "port": "IO_R2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 26,
+     "dis": 0
+    },
+    {
+     "num": 28,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 29,
+     "type": "BC_7",
+     "port": "IO_R3",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 28,
+     "dis": 0
+    },
+    {
+     "num": 30,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 31,
+     "type": "BC_7",
+     "port": "IO_R4",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 30,
+     "dis": 0
+    },
+    {
+     "num": 32,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 33,
+     "type": "BC_7",
+     "port": "IO_R5",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 32,
+     "dis": 0
+    },
+    {
+     "num": 34,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 35,
+     "type": "BC_7",
+     "port": "IO_R6",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 34,
+     "dis": 0
+    },
+    {
+     "num": 36,
+     "type": "BC_7",
+     "port": "IO_R7",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 34,
+     "dis": 0
+    },
+    {
+     "num": 37,
+     "type": "BC_1",
+     "port": "IO_R8",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 38,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 39,
+     "type": "BC_7",
+     "port": "IO_R9",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 38,
+     "dis": 0
+    },
+    {
+     "num": 40,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 41,
+     "type": "BC_7",
+     "port": "IO_R10",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 40,
+     "dis": 0
+    },
+    {
+     "num": 42,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 43,
+     "type": "BC_7",
+     "port": "IO_T1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 42,
+     "dis": 0
+    },
+    {
+     "num": 44,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 45,
+     "type": "BC_7",
+     "port": "IO_T2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 44,
+     "dis": 0
+    },
+    {
+     "num": 46,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 47,
+     "type": "BC_7",
+     "port": "IO_T3",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 46,
+     "dis": 0
+    },
+    {
+     "num": 48,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 49,
+     "type": "BC_7",
+     "port": "IO_T4",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 48,
+     "dis": 0
+    },
+    {
+     "num": 50,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 51,
+     "type": "BC_7",
+     "port": "IO_T5",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 50,
+     "dis": 0
+    },
+    {
+     "num": 52,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 53,
+     "type": "BC_7",
+     "port": "IO_T6",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 52,
+     "dis": 0
+    },
+    {
+     "num": 54,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 55,
+     "type": "BC_7",
+     "port": "IO_T7",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 54,
+     "dis": 0
+    },
+    {
+     "num": 56,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 57,
+     "type": "BC_7",
+     "port": "IO_T8",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 56,
+     "dis": 0
+    },
+    {
+     "num": 58,
+     "type": "BC_7",
+     "port": "IO_T9",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 32,
+     "dis": 0
+    },
+    {
+     "num": 59,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 60,
+     "type": "BC_7",
+     "port": "IO_T10",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 59,
+     "dis": 0
+    }
+   ],
+   "ports": {
+    "IO_L1": {
+     "pin": 3,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L2": {
+     "pin": 4,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L3": {
+     "pin": 5,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L4": {
+     "pin": 6,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L5": {
+     "pin": 7,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L6": {
+     "pin": 8,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L7": {
+     "pin": 9,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_L8": {
+     "pin": 10,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_B1": {
+     "pin": 13,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_B2": {
+     "pin": 14,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_B3": {
+     "pin": 15,
+     "kind": "bidir",
+     "core": null
+    },
+    "GCLK": {
+     "pin": 16,
+     "kind": "in",
+     "core": null
+    },
+    "PROG_B": {
+     "pin": 17,
+     "kind": "in",
+     "core": null
+    },
+    "IO_R1": {
+     "pin": 26,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      3,
+      0.5
+     ]
+    },
+    "IO_R2": {
+     "pin": 27,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      2,
+      0.5
+     ]
+    },
+    "IO_R3": {
+     "pin": 28,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      1,
+      0.5
+     ]
+    },
+    "IO_R4": {
+     "pin": 29,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      0,
+      0.5
+     ]
+    },
+    "IO_R5": {
+     "pin": 30,
+     "kind": "bidir",
+     "core": [
+      "toggle",
+      0.5
+     ]
+    },
+    "IO_R6": {
+     "pin": 31,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_R7": {
+     "pin": 32,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_R8": {
+     "pin": 33,
+     "kind": "in",
+     "core": null
+    },
+    "IO_R9": {
+     "pin": 34,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_R10": {
+     "pin": 35,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T1": {
+     "pin": 39,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T2": {
+     "pin": 40,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T3": {
+     "pin": 41,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T4": {
+     "pin": 42,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T5": {
+     "pin": 43,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T6": {
+     "pin": 44,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T7": {
+     "pin": 45,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T8": {
+     "pin": 46,
+     "kind": "bidir",
+     "core": null
+    },
+    "IO_T9": {
+     "pin": 47,
+     "kind": "bidir",
+     "core": [
+      "toggle",
+      0.25
+     ]
+    },
+    "IO_T10": {
+     "pin": 48,
+     "kind": "bidir",
+     "core": [
+      "drive",
+      1
+     ]
+    }
+   }
+  },
+  {
+   "ref": "U1",
+   "tap": "mcu.tap",
+   "irlen": 4,
+   "idcode": 490475759,
+   "opcodes": {
+    "0000": "EXTEST",
+    "0010": "SAMPLE",
+    "1110": "IDCODE",
+    "1111": "BYPASS"
+   },
+   "cells": [
+    {
+     "num": 0,
+     "type": "BC_1",
+     "port": "NRST",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 1,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 2,
+     "type": "BC_7",
+     "port": "PD0",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 1,
+     "dis": 0
+    },
+    {
+     "num": 3,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 4,
+     "type": "BC_7",
+     "port": "PD1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 3,
+     "dis": 0
+    },
+    {
+     "num": 5,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 6,
+     "type": "BC_7",
+     "port": "PD2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 5,
+     "dis": 0
+    },
+    {
+     "num": 7,
+     "type": "BC_1",
+     "port": "PC3",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 8,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 9,
+     "type": "BC_7",
+     "port": "PC6",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 8,
+     "dis": 0
+    },
+    {
+     "num": 10,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 11,
+     "type": "BC_1",
+     "port": "PB4",
+     "func": "output3",
+     "safe": "X",
+     "ctrl": 10,
+     "dis": 0
+    },
+    {
+     "num": 12,
+     "type": "BC_1",
+     "port": "PB3",
+     "func": "output2",
+     "safe": "1"
+    },
+    {
+     "num": 13,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 14,
+     "type": "BC_1",
+     "port": "PB2",
+     "func": "output3",
+     "safe": "X",
+     "ctrl": 13,
+     "dis": 0
+    },
+    {
+     "num": 15,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 16,
+     "type": "BC_1",
+     "port": "PB1",
+     "func": "output3",
+     "safe": "X",
+     "ctrl": 15,
+     "dis": 0
+    },
+    {
+     "num": 17,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 18,
+     "type": "BC_1",
+     "port": "PB0",
+     "func": "output3",
+     "safe": "X",
+     "ctrl": 17,
+     "dis": 0
+    },
+    {
+     "num": 19,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 20,
+     "type": "BC_7",
+     "port": "PA7",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 19,
+     "dis": 0
+    },
+    {
+     "num": 21,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 22,
+     "type": "BC_7",
+     "port": "PA6",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 21,
+     "dis": 0
+    },
+    {
+     "num": 23,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 24,
+     "type": "BC_7",
+     "port": "PA5",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 23,
+     "dis": 0
+    },
+    {
+     "num": 25,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 26,
+     "type": "BC_7",
+     "port": "PA4",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 25,
+     "dis": 0
+    },
+    {
+     "num": 27,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 28,
+     "type": "BC_7",
+     "port": "PA3",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 27,
+     "dis": 0
+    },
+    {
+     "num": 29,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 30,
+     "type": "BC_7",
+     "port": "PA2",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 29,
+     "dis": 0
+    },
+    {
+     "num": 31,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 32,
+     "type": "BC_7",
+     "port": "PA1",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 31,
+     "dis": 0
+    },
+    {
+     "num": 33,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 34,
+     "type": "BC_7",
+     "port": "PA0",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 33,
+     "dis": 0
+    },
+    {
+     "num": 35,
+     "type": "BC_1",
+     "port": "PC0",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 36,
+     "type": "BC_1",
+     "port": "PC1",
+     "func": "input",
+     "safe": "X"
+    },
+    {
+     "num": 37,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 38,
+     "type": "BC_7",
+     "port": "PC4",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 37,
+     "dis": 0
+    },
+    {
+     "num": 39,
+     "type": "BC_1",
+     "port": "*",
+     "func": "control",
+     "safe": "0"
+    },
+    {
+     "num": 40,
+     "type": "BC_7",
+     "port": "PC5",
+     "func": "bidir",
+     "safe": "X",
+     "ctrl": 39,
+     "dis": 0
+    }
+   ],
+   "ports": {
+    "NRST": {
+     "pin": 2,
+     "kind": "in",
+     "core": null
+    },
+    "PD0": {
+     "pin": 3,
+     "kind": "bidir",
+     "core": null
+    },
+    "PD1": {
+     "pin": 4,
+     "kind": "bidir",
+     "core": null
+    },
+    "PD2": {
+     "pin": 5,
+     "kind": "bidir",
+     "core": null
+    },
+    "PC3": {
+     "pin": 6,
+     "kind": "in",
+     "core": null
+    },
+    "PC6": {
+     "pin": 7,
+     "kind": "bidir",
+     "core": [
+      "toggle",
+      1.0
+     ]
+    },
+    "PB4": {
+     "pin": 11,
+     "kind": "out3",
+     "core": [
+      "drive",
+      1
+     ]
+    },
+    "PB3": {
+     "pin": 12,
+     "kind": "out2",
+     "core": [
+      "toggle",
+      0.5
+     ]
+    },
+    "PB2": {
+     "pin": 13,
+     "kind": "out3",
+     "core": [
+      "drive",
+      1
+     ]
+    },
+    "PB1": {
+     "pin": 14,
+     "kind": "out3",
+     "core": [
+      "drive",
+      1
+     ]
+    },
+    "PB0": {
+     "pin": 15,
+     "kind": "out3",
+     "core": [
+      "drive",
+      1
+     ]
+    },
+    "PA7": {
+     "pin": 17,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      7,
+      0.25
+     ]
+    },
+    "PA6": {
+     "pin": 18,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      6,
+      0.25
+     ]
+    },
+    "PA5": {
+     "pin": 19,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      5,
+      0.25
+     ]
+    },
+    "PA4": {
+     "pin": 20,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      4,
+      0.25
+     ]
+    },
+    "PA3": {
+     "pin": 21,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      3,
+      0.25
+     ]
+    },
+    "PA2": {
+     "pin": 22,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      2,
+      0.25
+     ]
+    },
+    "PA1": {
+     "pin": 23,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      1,
+      0.25
+     ]
+    },
+    "PA0": {
+     "pin": 24,
+     "kind": "bidir",
+     "core": [
+      "counter",
+      0,
+      0.25
+     ]
+    },
+    "PC0": {
+     "pin": 25,
+     "kind": "in",
+     "core": null
+    },
+    "PC1": {
+     "pin": 26,
+     "kind": "in",
+     "core": null
+    },
+    "PC4": {
+     "pin": 27,
+     "kind": "bidir",
+     "core": null
+    },
+    "PC5": {
+     "pin": 28,
+     "kind": "bidir",
+     "core": null
+    }
+   }
+  }
+ ],
+ "nets": {
+  "D0": [
+   "U1.24",
+   "U2.3"
+  ],
+  "D1": [
+   "U1.23",
+   "U2.4"
+  ],
+  "D2": [
+   "U1.22",
+   "U2.5"
+  ],
+  "D3": [
+   "U1.21",
+   "U2.6"
+  ],
+  "D4": [
+   "U1.20",
+   "U2.7"
+  ],
+  "D5": [
+   "U1.19",
+   "U2.8"
+  ],
+  "D6": [
+   "U1.18",
+   "U2.9"
+  ],
+  "D7": [
+   "U1.17",
+   "U2.10"
+  ],
+  "nCS": [
+   "U1.15",
+   "U2.13"
+  ],
+  "nRD": [
+   "U1.14",
+   "U2.14"
+  ],
+  "nWR": [
+   "U1.13",
+   "U2.15"
+  ],
+  "CLK": [
+   "U1.12",
+   "U2.16"
+  ],
+  "nPROG": [
+   "U1.11",
+   "U2.17"
+  ],
+  "IRQ": [
+   "U1.25",
+   "U2.48"
+  ],
+  "PWM0": [
+   "U1.26",
+   "U2.47"
+  ],
+  "SDA": [
+   "U1.27",
+   "U2.46"
+  ],
+  "SCL": [
+   "U1.28",
+   "U2.45"
+  ],
+  "nRESET": [
+   "U1.2"
+  ],
+  "GPIO0": [
+   "U1.3"
+  ],
+  "GPIO1": [
+   "U1.4"
+  ],
+  "GPIO2": [
+   "U1.5"
+  ],
+  "BTN": [
+   "U1.6"
+  ],
+  "STAT": [
+   "U1.7"
+  ],
+  "AUX0": [
+   "U2.34"
+  ],
+  "SPI_MISO": [
+   "U2.33"
+  ],
+  "SPI_MOSI": [
+   "U2.32"
+  ],
+  "SPI_SCK": [
+   "U2.31"
+  ],
+  "PWM1": [
+   "U2.30"
+  ],
+  "LED1": [
+   "U2.29"
+  ],
+  "LED2": [
+   "U2.28"
+  ],
+  "LED3": [
+   "U2.27"
+  ],
+  "LED4": [
+   "U2.26"
+  ]
+ },
+ "external": {
+  "BTN": [
+   "pulse",
+   4.0,
+   0.5,
+   0
+  ]
+ }
+}
