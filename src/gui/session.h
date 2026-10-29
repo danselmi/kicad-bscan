@@ -61,6 +61,43 @@ public:
     wxString                            extestNote;          // e.g. "retrying to leave"
     std::map<std::string, wxString>     extestInterrupted;   // TAP -> warning line
 
+    // --- the selected pin ---
+    // One pin is selected everywhere (KiCad, chip view, watch list, the
+    // Pins tab's selected pad); the last action wins. pickedPin: picked in
+    // the plugin (chip view, watch list), until the selection in KiCad
+    // changes (MainFrame clears it then).
+    std::optional<kicad::PadInfo> pickedPin;
+
+    using PadKey = std::pair<std::string, std::string>;   // reference, pad
+
+    // Picks a pin in the plugin and selects these pads in KiCad (if on the
+    // board); KiCad's answer to that is not passed on again (see
+    // IsOwnSelection())
+    void PickPins( const std::vector<PadKey>& aPads, const kicad::PadInfo& aPicked );
+
+    // No pin picked any more, and nothing selected in KiCad
+    void ClearPick();
+
+    // True once if a new KiCad selection is the one PickPins() asked for
+    bool IsOwnSelection( const std::vector<kicad::PadInfo>& aPads );
+
+    struct ShownPad
+    {
+        kicad::BoardState::Status status = kicad::BoardState::Status::NothingSelected;
+        kicad::PadInfo            pad;            // valid if status == PadSelected
+        int                       padCount = 0;   // MultiplePads
+        std::string               footprintRef;   // FootprintSelected (or the pad's)
+        std::string               detail;         // note from KiCad
+        bool                      fromChipView = false;
+    };
+
+    ShownPad SelectedPad() const;
+
+    // Pins the chip view shows (sampled with the Pins tab's pins; keys
+    // "chip:<reference>|<pin>"); empty while it is hidden
+    std::string              chipViewReference;
+    std::vector<std::string> chipViewPins;
+
     // Called when the settings cannot be saved because the project is unknown
     std::function<void( const wxString& )> OnNotSaved;
 
@@ -69,6 +106,13 @@ public:
     // project than the current one. True if new settings were loaded.
     bool LoadProject( const kicad::BoardState& aState );
     void Save();
+
+    // Without a KiCad project: settings in a file of the user's choice, or
+    // the default file in the user's configuration folder. True if loaded.
+    bool UseSettingsFile( const std::string& aFile );
+    bool SaveSettingsAs( const std::string& aFile );   // and use it from now on
+    static std::string DefaultSettingsFile();
+    bool settingsFromKiCad = false;   // projectFile is <project>.bscan.json of KiCad's project
 
     // --- devices ---
     std::shared_ptr<const bscan::BsdlDevice> DeviceFor( const std::string& aPath,
@@ -128,6 +172,8 @@ public:
 
 private:
     void addCurrentStateConstraints( bscan::IcDevice& aDevice, const StartStates& aStart );
+
+    std::set<PadKey> m_requestedSelection;   // asked from KiCad by PickPins()
 
     wxWindow*                                                       m_parent;
     std::map<std::string, std::shared_ptr<const bscan::BsdlDevice>> m_devices;        // by path

@@ -2,6 +2,7 @@
 #include "pins_page.h"
 
 #include <algorithm>
+#include <utility>
 #include <set>
 
 #include <wx/button.h>
@@ -114,7 +115,7 @@ PinsPage::PinsPage( wxWindow* aParent, Session& aSession, ExtestController& aExt
     buildWatchBox( this, sizer );
     SetSizer( sizer );
 
-    showPadState( m_session.board );
+    showPadState( m_session.SelectedPad() );
     showLiveMessage( _( "Select a pad in the PCB editor." ) );
     FillWatchList();
     updateDriveButtons();
@@ -129,8 +130,8 @@ void PinsPage::layoutChanged()
 
 void PinsPage::ShowBoard()
 {
-    showPadState( m_session.board );
-    m_addSelection->Enable( !m_session.board.pads.empty() );
+    showPadState( m_session.SelectedPad() );
+    m_addSelection->Enable( !m_session.board.pads.empty() || m_session.pickedPin.has_value() );
     UpdateTargets();
 }
 
@@ -225,10 +226,10 @@ wxWindow* PinsPage::buildPadBox( wxWindow* aParent, wxSizer* aSizer )
         b->Bind( wxEVT_BUTTON,
                  [this, what]( wxCommandEvent& )
                  {
-                     if( m_session.board.status == Status::PadSelected )
-                         m_extest.DrivePins( { { m_session.board.pad.reference,
-                                                 m_session.board.pad.number,
-                                                 {} } },
+                     Session::ShownPad shown = m_session.SelectedPad();
+
+                     if( shown.status == Status::PadSelected )
+                         m_extest.DrivePins( { { shown.pad.reference, shown.pad.number, {} } },
                                              what );
                  } );
         b->SetToolTip( wxString::Format( _( "Drive this pin: %s" ), DriveLabel( d ) ) );
@@ -297,7 +298,8 @@ wxWindow* PinsPage::buildWatchBox( wxWindow* aParent, wxSizer* aSizer )
 
     auto* buttons  = new wxBoxSizer( wxHORIZONTAL );
     m_addSelection = new wxButton( box, wxID_ANY, _( "+ Selection" ) );
-    m_addSelection->SetToolTip( _( "Add all pads selected in the PCB editor" ) );
+    m_addSelection->SetToolTip( _( "Add all pads selected in the PCB editor, or the pin "
+                                   "clicked in the chip view" ) );
     auto* remove = new wxButton( box, wxID_ANY, _( "Remove" ) );
     auto* clear  = new wxButton( box, wxID_ANY, _( "Remove all" ) );
     buttons->Add( m_addSelection, 0, wxRIGHT, FromDIP( 4 ) );
@@ -333,8 +335,25 @@ wxWindow* PinsPage::buildWatchBox( wxWindow* aParent, wxSizer* aSizer )
     m_addSelection->Bind( wxEVT_BUTTON, &PinsPage::onAddSelection, this );
     m_watchList->Bind( wxEVT_LIST_ITEM_RIGHT_CLICK, &PinsPage::onWatchMenu, this );
     m_watchList->Bind( wxEVT_LIST_ITEM_ACTIVATED, &PinsPage::onWatchMenu, this );
-    m_watchList->Bind( wxEVT_LIST_ITEM_SELECTED, [this]( wxListEvent& ) { updateWatchDrive(); } );
-    m_watchList->Bind( wxEVT_LIST_ITEM_DESELECTED, [this]( wxListEvent& ) { updateWatchDrive(); } );
+    // Selecting rows: drive buttons; the user's selection also goes to KiCad
+    // and the chip view (once per change, not per row)
+    auto selection = [this]( wxListEvent& )
+    {
+        updateWatchDrive();
+
+        if( m_watchSyncing || std::exchange( m_watchPending, true ) )
+            return;
+
+        CallAfter(
+                [this]
+                {
+                    m_watchPending = false;
+                    onWatchSelection();
+                } );
+    };
+
+    m_watchList->Bind( wxEVT_LIST_ITEM_SELECTED, selection );
+    m_watchList->Bind( wxEVT_LIST_ITEM_DESELECTED, selection );
     remove->Bind( wxEVT_BUTTON, &PinsPage::onRemoveWatch, this );
     clear->Bind( wxEVT_BUTTON, &PinsPage::onClearWatch, this );
     return box;
@@ -354,7 +373,7 @@ void PinsPage::onRateChanged( wxCommandEvent& )
 }
 
 
-void PinsPage::showPadState( const kicad::BoardState& aState )
+void PinsPage::showPadState( const Session::ShownPad& aState )
 {
     wxString hint;
 
@@ -379,7 +398,8 @@ void PinsPage::showPadState( const kicad::BoardState& aState )
         break;
 
     case Status::PadSelected:
-        hint = fromUtf8( aState.detail );   // e.g. footprint lookup problems
+        hint = aState.fromChipView ? _( "Pin clicked in the chip view." )
+                                   : fromUtf8( aState.detail );   // e.g. footprint lookup problems
         break;
     }
 
@@ -392,7 +412,11 @@ void PinsPage::showPadState( const kicad::BoardState& aState )
                            : pad.reference.empty() ? wxString( "?" )
                                                    : fromUtf8( pad.reference ) );
     m_padNumber->SetLabel( havePad ? fromUtf8( pad.number ) : dash() );
+    // A pin from the chip view has no net when there is no board
+    bool netKnown = !aState.fromChipView || m_session.board.padNets.contains( pad.reference );
+
     m_net->SetLabel( !havePad          ? dash()
+                     : !netKnown       ? _( "(no board)" )
                      : pad.net.empty() ? _( "(unconnected)" )
                                        : fromUtf8( pad.net ) );
 
@@ -414,13 +438,14 @@ void PinsPage::UpdateTargets()
     std::string                      identity;
 
     // --- the selected pad ---
-    wxString curMessage;
-    wxString curPort   = dash();
-    bool     curTarget = false;
+    wxString          curMessage;
+    wxString          curPort   = dash();
+    bool              curTarget = false;
+    Session::ShownPad shown     = m_session.SelectedPad();
 
-    if( m_session.board.status != Status::PadSelected )
+    if( shown.status != Status::PadSelected )
     {
-        curMessage = m_session.board.status == Status::MultiplePads
+        curMessage = shown.status == Status::MultiplePads
                              ? _( "Several pads selected; \"+ Selection\" adds them to the "
                                   "watch list." )
                              : _( "Select a pad in the PCB editor." );
@@ -429,8 +454,7 @@ void PinsPage::UpdateTargets()
     {
         LiveSampler::Target t;
         std::string         id;
-        curMessage = m_session.ResolvePin( m_session.board.pad.reference,
-                                           m_session.board.pad.number, t, id );
+        curMessage = m_session.ResolvePin( shown.pad.reference, shown.pad.number, t, id );
 
         if( !t.cells.port.empty() )
         {
@@ -468,6 +492,20 @@ void PinsPage::UpdateTargets()
         t.key = key;
         targets.push_back( t );
         identity += key + "=" + id + ";";
+    }
+
+    // --- the pins the chip view shows ---
+    for( const std::string& pin : m_session.chipViewPins )
+    {
+        LiveSampler::Target t;
+        std::string         id;
+
+        if( !m_session.ResolvePin( m_session.chipViewReference, pin, t, id ).empty() )
+            continue;   // the chip view shows them as not sampled
+
+        t.key = "chip:" + m_session.chipViewReference + "|" + pin;
+        identity += t.key + "=" + id + ";";
+        targets.push_back( t );
     }
 
     if( !m_targetsIdentity || identity != *m_targetsIdentity )
@@ -546,15 +584,19 @@ void PinsPage::ShowSample( const LiveSampler::SampleUpdate& aUpdate )
 
     // The selected pad is sampled separately; do not count it twice when it is
     // also in the watch list
-    std::string curKey;
+    std::string       curKey;
+    Session::ShownPad shown = m_session.SelectedPad();
 
-    if( m_session.board.status == Status::PadSelected )
-        curKey = watchKey( { m_session.board.pad.reference, m_session.board.pad.number, {} } );
+    if( shown.status == Status::PadSelected )
+        curKey = watchKey( { shown.pad.reference, shown.pad.number, {} } );
 
     size_t total = 0;
 
     for( const LiveSampler::PinResult& r : aUpdate.pins )
     {
+        if( r.key.starts_with( "chip:" ) )
+            continue;   // shown by the chip view
+
         bool duplicate =
                 r.key == "cur" && !curKey.empty()
                 && std::any_of( m_session.config.watch.begin(), m_session.config.watch.end(),
@@ -757,7 +799,12 @@ void PinsPage::onAddSelection( wxCommandEvent& )
 {
     int added = 0, unknown = 0;
 
-    for( const kicad::PadInfo& pad : m_session.board.pads )
+    // The pin clicked in the chip view, otherwise the pads selected in KiCad
+    std::vector<kicad::PadInfo> pads = m_session.pickedPin
+                                               ? std::vector<kicad::PadInfo>{ *m_session.pickedPin }
+                                               : m_session.board.pads;
+
+    for( const kicad::PadInfo& pad : pads )
     {
         if( pad.reference.empty() )
         {
@@ -778,10 +825,10 @@ void PinsPage::onAddSelection( wxCommandEvent& )
         }
     }
 
-    if( m_session.board.pads.empty() )
+    if( pads.empty() )
     {
-        wxMessageBox( _( "Select one or more pads in the PCB editor first "
-                         "(Ctrl+click selects several)." ),
+        wxMessageBox( _( "Select one or more pads in the PCB editor first (Ctrl+click selects "
+                         "several), or click a pin in the chip view." ),
                       _( "Watch list" ), wxOK | wxICON_INFORMATION, this );
         return;
     }
@@ -833,9 +880,10 @@ void PinsPage::onClearWatch( wxCommandEvent& )
 
 void PinsPage::onBsdlInfo( wxCommandEvent& )
 {
-    wxString             ref = m_session.board.status == Status::PadSelected
-                                       ? fromUtf8( m_session.board.pad.reference )
-                                       : fromUtf8( m_session.board.footprintRef );
+    Session::ShownPad    shown = m_session.SelectedPad();
+    wxString             ref   = shown.status == Status::PadSelected
+                                         ? fromUtf8( shown.pad.reference )
+                                         : fromUtf8( shown.footprintRef );
     const TapAssignment* a   = m_session.config.FindByReference( toUtf8( ref ) );
 
     if( ref.empty() || !a || a->bsdl.empty() )
@@ -877,9 +925,9 @@ void PinsPage::onBsdlInfo( wxCommandEvent& )
         text << wxString::Format( _( "Parser: %zu error(s), %zu warning(s)" ), errors, warnings )
              << "\n";
 
-    if( m_session.board.status == Status::PadSelected )
+    if( shown.status == Status::PadSelected )
     {
-        const std::string& pin   = m_session.board.pad.number;
+        const std::string& pin   = shown.pad.number;
         auto               cells = dev->LookupPin( a->pinMap, pin );
 
         text << "\n" << wxString::Format( _( "Pad %s: " ), fromUtf8( pin ) );
@@ -903,6 +951,74 @@ void PinsPage::onBsdlInfo( wxCommandEvent& )
     }
 
     wxMessageBox( text, _( "BSDL info" ), wxOK | wxICON_INFORMATION, this );
+}
+
+
+void PinsPage::onWatchSelection()
+{
+    std::vector<bscan::WatchEntry> pins = selectedWatchPins();
+
+    if( pins.empty() )
+        return;
+
+    // The row the user is on is the selected pad; all selected rows go to KiCad
+    long                     focused = m_watchList->GetFocusedItem();
+    const bscan::WatchEntry* picked  = &pins.back();
+
+    if( focused >= 0 && focused < static_cast<long>( m_session.config.watch.size() )
+        && m_watchList->IsSelected( focused ) )
+        picked = &m_session.config.watch[focused];
+
+    kicad::PadInfo pad;
+    pad.reference = picked->reference;
+    pad.number    = picked->pad;
+    pad.net       = picked->net;
+
+    std::vector<Session::PadKey> keys;
+
+    for( const bscan::WatchEntry& w : pins )
+        keys.push_back( { w.reference, w.pad } );
+
+    m_session.PickPins( keys, pad );
+    ShowBoard();
+    SendGuiEvent( this, EVT_WATCH_SELECTION );
+}
+
+
+void PinsPage::SelectWatchPins( const std::vector<Session::PadKey>& aPins )
+{
+    std::vector<long> rows;
+
+    for( long i = 0; i < static_cast<long>( m_session.config.watch.size() ); ++i )
+    {
+        const bscan::WatchEntry& w = m_session.config.watch[i];
+
+        if( std::ranges::find( aPins, Session::PadKey{ w.reference, w.pad } ) != aPins.end() )
+            rows.push_back( i );
+    }
+
+    if( rows.empty() )
+        return;
+
+    m_watchSyncing = true;
+
+    for( long i = 0; i < m_watchList->GetItemCount(); ++i )
+        m_watchList->Select( i, std::ranges::find( rows, i ) != rows.end() );
+
+    m_watchList->Focus( rows.front() );
+    m_watchSyncing = false;
+    updateWatchDrive();
+}
+
+
+std::vector<Session::PadKey> PinsPage::SelectedWatchKeys() const
+{
+    std::vector<Session::PadKey> keys;
+
+    for( const bscan::WatchEntry& w : selectedWatchPins() )
+        keys.push_back( { w.reference, w.pad } );
+
+    return keys;
 }
 
 
@@ -983,19 +1099,21 @@ void PinsPage::updateDriveButtons()
     wxString hint;
     wxString startFor;
 
-    if( m_session.board.status == Status::PadSelected )
+    Session::ShownPad shown = m_session.SelectedPad();
+
+    if( shown.status == Status::PadSelected )
     {
-        const std::string& ref = m_session.board.pad.reference;
+        const std::string& ref = shown.pad.reference;
 
         if( Session::ActiveExtest* e = m_session.ActiveExtestFor( ref ) )
         {
-            auto cells = e->device->LookupPin( e->pinMap, m_session.board.pad.number );
+            auto cells = e->device->LookupPin( e->pinMap, shown.pad.number );
             drive      = cells && cells->outputCell >= 0;
 
             if( !drive )
                 hint = _( "EXTEST is active, but this pin has no output cell." );
         }
-        else if( std::string tap = m_session.ExtestStartable( ref, m_session.board.pad.number );
+        else if( std::string tap = m_session.ExtestStartable( ref, shown.pad.number );
                  !tap.empty() )
         {
             const TapAssignment* a = m_session.config.Find( tap );

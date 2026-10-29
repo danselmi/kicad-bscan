@@ -16,6 +16,8 @@
 #include "bscan/project_config.h"
 #include "kicad/board_watcher.h"
 
+#include "session.h"   // Session::ShownPad
+
 class wxButton;
 class wxBoxSizer;
 class wxChoice;
@@ -45,6 +47,11 @@ public:
 
     void ShowSample( const bscan::LiveSampler::SampleUpdate& aUpdate );
     void FillWatchList();                      // the watch list in the settings changed
+
+    // Pins selected elsewhere (KiCad, chip view): the rows of those on the
+    // watch list are selected; none on the list: the selection stays
+    void SelectWatchPins( const std::vector<Session::PadKey>& aPins );
+    std::vector<Session::PadKey> SelectedWatchKeys() const;   // selected rows
     void SetStatus( const wxString& aText );   // sampling status line
 
     // Sends EVT_LAYOUT_CHANGED (gui_events.h) when its size changes
@@ -61,7 +68,7 @@ private:
     void onBsdlInfo( wxCommandEvent& aEvent );
     void onWatchMenu( wxListEvent& aEvent );
 
-    void                           showPadState( const kicad::BoardState& aState );
+    void                           showPadState( const Session::ShownPad& aState );
     void                           showLiveMessage( const wxString& aMessage );
     void                           updatePadHint();
     void                           updateWatchValues();
@@ -71,6 +78,7 @@ private:
     void                           updateWatchDrive();
     std::vector<bscan::WatchEntry> selectedWatchPins() const;
     void                           layoutChanged();
+    void                           onWatchSelection();   // by the user: pick, KiCad, chip view
 
     static std::string watchKey( const bscan::WatchEntry& aEntry );
 
@@ -107,6 +115,8 @@ private:
     std::vector<wxButton*> m_driveButtons;
 
     wxListView*            m_watchList       = nullptr;
+    bool                   m_watchSyncing    = false;   // selecting rows from elsewhere
+    bool                   m_watchPending    = false;   // onWatchSelection() queued
     wxButton*              m_addSelection    = nullptr;
     wxBoxSizer*            m_watchButtons    = nullptr;
     wxStaticText*          m_watchDriveLabel = nullptr;

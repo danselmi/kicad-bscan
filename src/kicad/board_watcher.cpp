@@ -138,13 +138,15 @@ void BoardWatcher::run()
         }
 
         selectNet();
+        selectPads();
 
         std::unique_lock lock( m_waitMutex );
         m_wake.wait_for( lock, m_interval,
                          [this]
                          {
                              std::lock_guard sel( m_selectMutex );
-                             return m_stop.load() || m_refreshRefs.load() || m_selectNet.has_value();
+                             return m_stop.load() || m_refreshRefs.load() || m_selectNet.has_value()
+                                    || m_selectPads.has_value();
                          } );
     }
 }
@@ -509,6 +511,49 @@ bool BoardWatcher::poll( BoardState& aState )
     aState            = next;
     return true;
 }
+
+void BoardWatcher::SelectPads( std::vector<std::pair<std::string, std::string>> aPads )
+{
+    {
+        std::lock_guard lock( m_selectMutex );
+        m_selectPads = std::move( aPads );
+    }
+
+    m_wake.notify_all();
+}
+
+
+void BoardWatcher::selectPads()
+{
+    std::optional<std::vector<std::pair<std::string, std::string>>> pads;
+
+    {
+        std::lock_guard lock( m_selectMutex );
+        pads.swap( m_selectPads );
+    }
+
+    if( !pads || !m_haveDocument || !m_footprintsLoaded )
+        return;
+
+    cmd::AddToSelection add;
+    setBoardDocument( add.mutable_header(), m_docFile );
+
+    for( const auto& pad : *pads )
+        if( auto it = m_padIds.find( pad ); it != m_padIds.end() )   // on the board
+            add.add_items()->set_value( it->second );
+
+    if( add.items_size() == 0 && !pads->empty() )
+        return;
+
+    // Selecting is only a help for the user: errors are not reported
+    cmd::ClearSelection clear;
+    setBoardDocument( clear.mutable_header(), m_docFile );
+    (void) m_client.Call<google::protobuf::Empty>( clear );
+
+    if( add.items_size() > 0 )
+        (void) m_client.Call<cmd::SelectionResponse>( add );
+}
+
 
 void BoardWatcher::selectNet()
 {

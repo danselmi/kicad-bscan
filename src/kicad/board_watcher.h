@@ -96,6 +96,12 @@ public:
     // clear the selection. Done by the polling thread. Thread-safe.
     void SelectNet( std::string aNet );
 
+    // Selects pads (reference, pad number) in the PCB editor, replacing the
+    // selection; pads not on the board are left out (none of them on the
+    // board: the selection stays; no pads: it is cleared). Done by the
+    // polling thread. Thread-safe.
+    void SelectPads( std::vector<std::pair<std::string, std::string>> aPads );
+
     // Polls synchronously until KiCad answers (used by the probe tool).
     BoardState PollOnce();
 
@@ -127,7 +133,9 @@ private:
 
     std::mutex                 m_selectMutex;
     std::optional<std::string> m_selectNet;
+    std::optional<std::vector<std::pair<std::string, std::string>>> m_selectPads;   // ref, pad
     void selectNet();   // polling thread
+    void selectPads();   // polling thread
     std::mutex              m_waitMutex;
     std::condition_variable m_wake;
 

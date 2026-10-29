@@ -18,6 +18,18 @@ wxDECLARE_EVENT( EVT_LAYOUT_CHANGED, wxCommandEvent );
 // forgotten. GetInt() != 0: devices were read again, sample them anew.
 wxDECLARE_EVENT( EVT_ASSIGNMENTS_CHANGED, wxCommandEvent );
 
+// Chip view (a separate window; MainFrame binds them on it):
+// a pin was clicked (Session::pickedPin is set),
+wxDECLARE_EVENT( EVT_CHIP_PIN_SELECTED, wxCommandEvent );
+// the pins to sample changed (Session::chipViewReference / chipViewPins),
+wxDECLARE_EVENT( EVT_CHIP_PINS_CHANGED, wxCommandEvent );
+// the watch list in the settings changed.
+wxDECLARE_EVENT( EVT_WATCH_LIST_CHANGED, wxCommandEvent );
+
+// PinsPage: rows of the watch list were selected by the user (Session::pickedPin
+// is set, KiCad was asked to select them); travels up to MainFrame.
+wxDECLARE_EVENT( EVT_WATCH_SELECTION, wxCommandEvent );
+
 // Sends a wxCommandEvent of aType from aSource with an int and a string
 // (both optional) and processes it before returning.
 void SendGuiEvent( wxWindow* aSource, wxEventType aType, int aInt = 0,

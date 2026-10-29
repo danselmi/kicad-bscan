@@ -14,6 +14,7 @@
 #include "bscan/extest.h"
 #include "bscan/interconnect.h"
 #include "bscan/interconnect_session.h"
+#include "bscan/package_layout.h"
 #include "bscan/project_config.h"
 #include "bscan/tap_status.h"
 
@@ -214,7 +215,7 @@ static void testProjectConfig()
     cfg.port = 7777;
     cfg.taps.push_back( { "xc7.tap", 0x037c4093, "U1", ( dir / "bsdl" / "chip.bsd" ).string(),
                           "CSGA225", { { "D5", "z" }, { "E1", "0" } } } );
-    cfg.taps.push_back( { "other.tap", 0, "", "/opt/bsdl/other.bsd", "", {} } );
+    cfg.taps.push_back( { "other.tap", 0, "", "/opt/bsdl/other.bsd", "", {}, "quad:30,20,30,20" } );
     cfg.watch.push_back( { "U1", "D1", "BTN0" } );
     cfg.watch.push_back( { "U1", "D2", "" } );
     cfg.extestLeft.push_back( "xc7.tap" );
@@ -232,6 +233,7 @@ static void testProjectConfig()
     CHECK( text.find( "\"bsdl/chip.bsd\"" ) != std::string::npos );
     CHECK( text.find( "\"/opt/bsdl/other.bsd\"" ) != std::string::npos );
     CHECK( text.find( "\"0x037c4093\"" ) != std::string::npos );
+    CHECK( text.find( "\"package\": \"quad:30,20,30,20\"" ) != std::string::npos );
 
     auto loaded = LoadProjectConfig( file );
     CHECK( loaded.has_value() );
@@ -776,6 +778,104 @@ static void testInterconnect()
 }
 
 
+static const PlacedPin* placed( const PackageLayout& aLayout, const std::string& aPin )
+{
+    for( const PlacedPin& p : aLayout.pins )
+        if( p.pin == aPin )
+            return &p;
+
+    return nullptr;
+}
+
+
+static void testPackageLayout()
+{
+    // Shapes: parse and print
+    CHECK( PackageShape::Parse( "" ) && PackageShape::Parse( "" )->type == PackageShape::Type::Auto );
+    CHECK( PackageShape::Parse( "BGA" ) && PackageShape::Parse( "BGA" )->type == PackageShape::Type::Bga );
+    auto q = PackageShape::Parse( " quad: 30, 20,30,20 " );
+    CHECK( q && q->type == PackageShape::Type::Quad && q->sides == std::vector<int>( { 30, 20, 30, 20 } ) );
+    CHECK( q && q->ToString() == "quad:30,20,30,20" );
+    CHECK( !PackageShape::Parse( "quad:1,2,3" ) && !PackageShape::Parse( "qfp" ) );
+    CHECK( PackageShape::Parse( "dual" ) && PackageShape::Parse( "dual" )->ToString() == "dual" );
+
+    // Quad, auto: 32 pins, 8 per side, counter-clockwise from the top left
+    std::vector<std::string> qfn;
+
+    for( int i = 1; i <= 32; ++i )
+        qfn.push_back( std::to_string( i ) );
+
+    qfn.push_back( "EP" );   // exposed pad: in the middle
+    PackageLayout l = LayoutPackage( qfn, {} );
+    CHECK( l.type == PackageShape::Type::Quad && l.problem.empty() && l.pins.size() == 33 );
+    const PlacedPin* p1 = placed( l, "1" );
+    const PlacedPin* p8 = placed( l, "8" );
+    const PlacedPin* p9 = placed( l, "9" );
+    const PlacedPin* p17 = placed( l, "17" );
+    const PlacedPin* p25 = placed( l, "25" );
+    const PlacedPin* p32 = placed( l, "32" );
+    const PlacedPin* ep = placed( l, "EP" );
+    CHECK( p1 && p1->side == PlacedPin::Side::Left && p8 && p8->side == PlacedPin::Side::Left );
+    CHECK( p1 && p8 && p1->y < p8->y );                                  // left side downwards
+    CHECK( p9 && p9->side == PlacedPin::Side::Bottom && p9->x < 1.5 );   // bottom from the left
+    CHECK( p17 && p17->side == PlacedPin::Side::Right && p17->y > l.height - 1.5 );   // right upwards
+    CHECK( p25 && p25->side == PlacedPin::Side::Top && p25->x > l.width - 1.5 );     // top to the left
+    CHECK( p32 && p32->side == PlacedPin::Side::Top && p32->x < 1.5 );
+    CHECK( ep && ep->side == PlacedPin::Side::Centre );
+
+    // Uneven split: 30 pins -> 8, 7, 8, 7
+    std::vector<std::string> thirty( qfn.begin(), qfn.begin() + 30 );
+    l = LayoutPackage( thirty, {} );
+    CHECK( placed( l, "8" ) && placed( l, "8" )->side == PlacedPin::Side::Left );
+    CHECK( placed( l, "9" ) && placed( l, "9" )->side == PlacedPin::Side::Bottom );
+    CHECK( placed( l, "16" ) && placed( l, "16" )->side == PlacedPin::Side::Right );
+
+    // Override with unequal sides, and one that is too small
+    l = LayoutPackage( thirty, *PackageShape::Parse( "quad:10,5,10,5" ) );
+    CHECK( l.problem.empty() && placed( l, "10" )->side == PlacedPin::Side::Left
+           && placed( l, "11" )->side == PlacedPin::Side::Bottom
+           && placed( l, "26" )->side == PlacedPin::Side::Top );
+    l = LayoutPackage( thirty, *PackageShape::Parse( "quad:5,5,5,5" ) );
+    CHECK( !l.problem.empty() && placed( l, "30" )->side != PlacedPin::Side::Centre );
+
+    // Dual: left side down, right side up
+    l = LayoutPackage( std::vector<std::string>( qfn.begin(), qfn.begin() + 8 ),
+                       *PackageShape::Parse( "dual" ) );
+    CHECK( l.type == PackageShape::Type::Dual && placed( l, "4" )->side == PlacedPin::Side::Left
+           && placed( l, "5" )->side == PlacedPin::Side::Right
+           && placed( l, "5" )->y > placed( l, "8" )->y );
+
+    // An override that does not fit the names: the guess, with a note
+    l = LayoutPackage( thirty, *PackageShape::Parse( "bga" ) );
+    CHECK( l.type == PackageShape::Type::Quad && !l.problem.empty()
+           && placed( l, "1" )->side == PlacedPin::Side::Left );
+    l = LayoutPackage( { "A1", "A2", "B1", "B2" }, *PackageShape::Parse( "quad" ) );
+    CHECK( l.type == PackageShape::Type::Bga && !l.problem.empty() );
+
+    // BGA: JEDEC rows skip I, O, ...; A1 top left
+    l = LayoutPackage( { "A1", "A2", "B1", "H3", "J3", "AA1", "VCC" }, {} );
+    CHECK( l.type == PackageShape::Type::Bga );
+    CHECK( l.columns == 3 && l.rowNames.size() == 21 && l.rowNames[8] == "J" && l.rowNames[20] == "AA" );
+    CHECK( placed( l, "A1" )->x < 1 && placed( l, "A1" )->y < 1 );
+    CHECK( placed( l, "J3" )->y - placed( l, "H3" )->y == 1.0 );   // no row I in between
+    CHECK( placed( l, "VCC" )->side == PlacedPin::Side::Centre );
+
+    // Pins of a BSDL file: kinds
+    auto dev = BsdlDevice::Load( SHARED_BSD );
+    CHECK( dev.has_value() );
+
+    if( dev )
+    {
+        auto pins = ( *dev )->PackagePins( "" );
+        CHECK( !pins.empty() );
+        bool jtag = std::ranges::any_of( pins, []( const PackagePin& p )
+                                         { return p.kind == PackagePin::Kind::Jtag; } );
+        bool bs = std::ranges::any_of( pins, []( const PackagePin& p )
+                                       { return p.kind == PackagePin::Kind::BoundaryScan; } );
+        CHECK( jtag && bs );
+    }
+}
+
 int main()
 {
     testBits();
@@ -787,6 +887,7 @@ int main()
     testBsdlIndex();
     testCurIr();
     testTapStatus();
+    testPackageLayout();
 
     std::printf( g_failed ? "%d check(s) failed\n" : "all checks passed\n", g_failed );
     return g_failed ? 1 : 0;

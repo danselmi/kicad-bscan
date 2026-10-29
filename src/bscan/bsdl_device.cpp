@@ -2,6 +2,8 @@
 #include "bscan/bsdl_device.h"
 
 #include <algorithm>
+#include <cctype>
+#include <string_view>
 
 #include <bsdl.h>
 
@@ -270,6 +272,72 @@ std::vector<std::string> BsdlDevice::PinNames( const std::string& aPinMap ) cons
 
     for( size_t i = 0; map && i < map->entry_count; ++i )
         pins.emplace_back( map->entries[i].pin ? map->entries[i].pin : "" );
+
+    return pins;
+}
+
+
+std::vector<PackagePin> BsdlDevice::PackagePins( const std::string& aPinMap ) const
+{
+    const bsdl_device*  d   = dev( m_dev );
+    const bsdl_pin_map* map = aPinMap.empty() ? d->active_pin_map
+                                              : bsdl_find_pin_map( d, aPinMap.c_str() );
+    std::vector<PackagePin> pins;
+
+    auto same = []( const char* aA, const char* aB )
+    {
+        if( !aA || !aB )
+            return false;
+
+        std::string_view a( aA ), b( aB );
+        return std::ranges::equal( a, b, []( unsigned char x, unsigned char y )
+                                   { return std::toupper( x ) == std::toupper( y ); } );
+    };
+
+    for( size_t i = 0; map && i < map->entry_count; ++i )
+    {
+        const bsdl_pin_map_entry& e = map->entries[i];
+
+        if( !e.pin )
+            continue;
+
+        PackagePin p;
+        p.pin = e.pin;
+
+        if( auto cells = LookupPin( aPinMap, p.pin ) )
+            p.cells = *cells;
+
+        const char* port = e.port.name;
+        const bsdl_tap& tap = d->tap;
+
+        bool linkage = false;
+
+        for( size_t k = 0; k < d->port_count; ++k )
+        {
+            if( same( d->ports[k].name, port ) )
+                linkage = d->ports[k].dir == BSDL_DIR_LINKAGE;
+        }
+
+        if( same( port, tap.tdi ) || same( port, tap.tdo ) || same( port, tap.tms )
+            || same( port, tap.tck ) || same( port, tap.trst ) )
+            p.kind = PackagePin::Kind::Jtag;
+        else if( linkage )
+            p.kind = PackagePin::Kind::Linkage;
+        else if( p.cells.HasCells() )
+            p.kind = PackagePin::Kind::BoundaryScan;
+        else
+            p.kind = PackagePin::Kind::NoCells;
+
+        if( p.cells.port.empty() && port )
+        {
+            p.cells.port = port;
+
+            if( e.port.index >= 0 )
+                p.cells.port += "(" + std::to_string( e.port.index ) + ")";
+        }
+
+        pins.push_back( std::move( p ) );
+    }
 
     return pins;
 }

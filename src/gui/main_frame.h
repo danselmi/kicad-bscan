@@ -6,6 +6,8 @@
 //   Pins               PinsPage          selected pad, watch list, live values, drive
 //   Interconnect test  InterconnectPage  shorts and opens between the chips
 //
+// and the chip view (ChipView), a separate window opened from here.
+//
 // The frame owns the workers (OpenOCD sampler, KiCad board watcher), the
 // Session the parts share and the ExtestController, and passes updates and
 // changes from one part to the others.
@@ -23,11 +25,13 @@
 #include "session.h"
 
 class wxBitmapToggleButton;
+class wxButton;
 class wxNotebook;
 class wxPanel;
 class wxSizer;
 class wxStaticText;
 class ChainPage;
+class ChipView;
 class ExtestBanner;
 class InterconnectPage;
 class PinsPage;
@@ -56,8 +60,14 @@ private:
     void showBoardState( const kicad::BoardState& aState );
     void showChain( const bscan::LiveSampler::ChainUpdate& aUpdate );
     void loadProject( const kicad::BoardState& aState );
+    void applySettings();               // after other settings were loaded
+    void useStandaloneSettings();       // no KiCad project: the last file or the default
+    void onSettingsFile();              // menu: open, save as, default
+    void showSettingsSource();          // KiCad line and "Settings file..." button
 
     void updateInterconnect();   // plans the test again if its tab is shown
+    void updateChipView();       // if it is open
+    void openChipView();
     void ensureFits();
 
     // --- workers
@@ -72,10 +82,14 @@ private:
     wxPanel*              m_panel         = nullptr;
     wxBitmapToggleButton* m_pin           = nullptr;   // keep window on top
     wxStaticText*         m_kicadStatus   = nullptr;
+    wxString              m_kicadText;                 // KiCad line without the settings file
+    wxButton*             m_settingsFile  = nullptr;   // only without a KiCad project
+    bool                  m_standaloneTried = false;   // useStandaloneSettings() once
     wxStaticText*         m_openocdStatus = nullptr;
     ExtestBanner*         m_extestBanner  = nullptr;
     wxNotebook*           m_tabs          = nullptr;
     ChainPage*            m_chainPage     = nullptr;
     PinsPage*             m_pinsPage      = nullptr;
     InterconnectPage*     m_icPage        = nullptr;
+    ChipView*             m_chipView      = nullptr;   // created when first opened
 };

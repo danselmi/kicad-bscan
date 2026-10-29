@@ -34,6 +34,22 @@ struct OutputPin
     PinCells    cells;
 };
 
+// A physical pin of a pin map, for drawing the package
+struct PackagePin
+{
+    enum class Kind
+    {
+        BoundaryScan,   // has an input and/or output cell
+        NoCells,        // a signal port without boundary cells
+        Linkage,        // power, ground, no-connect (linkage ports)
+        Jtag            // TDI, TDO, TMS, TCK, TRST
+    };
+
+    std::string pin;     // e.g. "37" or "AB12"
+    Kind        kind = Kind::NoCells;
+    PinCells    cells;   // port name set for all kinds
+};
+
 class BsdlDevice
 {
 public:
@@ -87,6 +103,9 @@ public:
 
     // Physical pins of a pin map in file order (empty name: default map)
     std::vector<std::string> PinNames( const std::string& aPinMap ) const;
+
+    // All physical pins of a pin map with their port and kind, in file order
+    std::vector<PackagePin> PackagePins( const std::string& aPinMap ) const;
 
     // Resolves a physical pin (pad number / ball) in the given pin map
     // (empty name: default pin map). Port names are never used.

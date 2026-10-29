@@ -8,6 +8,7 @@
 //   "taps": [
 //     { "tap": "xc7.tap", "idcode": "0x037c4093", "reference": "U1",
 //       "bsdl": "bsdl/xc7s25_csga225.bsd", "pin_map": "CSGA225",
+//       "package": "quad:30,20,30,20",
 //       "extest_start": { "D5": "z", "E1": "0" } }
 //   ],
 //   "watch": [
@@ -42,6 +43,8 @@ struct TapAssignment
     // EXTEST starting state per pin ("z", "0", "1", "keep"); pins not listed
     // use the BSDL safe values
     std::map<std::string, std::string> extestStart;
+
+    std::string package;   // chip view layout (PackageShape::ToString()), empty: auto
 
     bool operator==( const TapAssignment& ) const = default;
 };

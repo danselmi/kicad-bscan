@@ -138,6 +138,7 @@ std::expected<ProjectConfig, std::string> LoadProjectConfig( const std::string& 
             a.reference = t.value( "reference", "" );
             a.bsdl      = fromStored( t.value( "bsdl", "" ), base );
             a.pinMap    = t.value( "pin_map", "" );
+            a.package   = t.value( "package", "" );
 
             if( t.contains( "extest_start" ) && t["extest_start"].is_object() )
             {
@@ -218,6 +219,8 @@ std::expected<void, std::string> SaveProjectConfig( const std::string&   aFileUt
             t["bsdl"] = toStored( a.bsdl, base );
         if( !a.pinMap.empty() )
             t["pin_map"] = a.pinMap;
+        if( !a.package.empty() )
+            t["package"] = a.package;
         if( !a.extestStart.empty() )
             t["extest_start"] = a.extestStart;
 

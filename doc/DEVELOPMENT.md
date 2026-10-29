@@ -35,6 +35,7 @@ src/kicad/ipc_client.*      NNG client, error mapping
 src/kicad/board_watcher.*   worker thread: selection, footprints, pad nets
 src/bscan/interconnect_session.* interconnect test: plan, run, fault statistics (no GUI)
 src/bscan/tap_status.*      status of a TAP in the chain table (check, EXTEST possible)
+src/bscan/package_layout.*  chip view: package layout from the pin names (BGA, quad, dual)
 src/gui/main_frame.*        window: connection line, tabs, workers, passes changes on
 src/gui/session.*           what the parts share: board, settings, chain, devices, EXTEST state
 src/gui/extest_controller.* EXTEST actions: setup, review, enter, take over, drive, leave
@@ -42,6 +43,8 @@ src/gui/extest_banner.*     the red EXTEST bar
 src/gui/chain_page.*        tab "JTAG chain" (with chain_table.*, BSDL folders)
 src/gui/pins_page.*         tab "Pins": selected pad, watch list, live values
 src/gui/interconnect_page.* tab "Interconnect test"
+src/gui/chip_view.*         chip view window: chooser, layout, sampling, selection, pin menu
+src/gui/chip_canvas.*       its drawing: package, pin colours, legend, tooltips (ChipDrawing in)
 src/gui/*_dialogs.*         EXTEST and BSDL dialogs
 src/gui/gui_events.*        wx events between the parts of the window (layout, assignments)
 tools/bscan_chain.cpp       developer tool: chain, BSDL check, SAMPLE, BSDL search

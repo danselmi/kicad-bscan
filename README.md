@@ -30,6 +30,9 @@ live values in the Pins tab.*
   pins of your chips in well under a second, net by net; click a faulty net
   to select it in the PCB editor (and, by cross-probing, in the schematic; see
   [Interconnect test](#interconnect-test)).
+- **Chip view:** a chip of the chain drawn from its BSDL file, every pin
+  coloured by its live state – for large BGAs, and for boards not designed
+  in KiCad (see [Chip view](#chip-view)).
 - **JTAG chain overview:** every TAP OpenOCD knows, with IR length, assigned
   footprint, BSDL file and package, and a check that the BSDL file matches
   the chip (IR length, IDCODE).
@@ -37,7 +40,11 @@ live values in the Pins tab.*
   offers the files whose IDCODE matches, best-fitting package first.
 
 Settings are stored per project in `<project>.bscan.json` next to the KiCad
-project.
+project. Without a KiCad project (no board open, or no KiCad at all) they go
+to a file of their own: by default `no-project.bscan.json` in the user's
+configuration folder (`~/.config/kicad-bscan/` on Linux, `%APPDATA%\kicad-bscan\`
+on Windows); **Settings file...** opens another one or saves them as a new
+one, e.g. one per board.
 
 ## Requirements
 
@@ -148,10 +155,52 @@ OpenOCD: pins, EXTEST and the interconnect test work as with a real board.
 5. **Watch list:** select pads in KiCad and click **+ Selection** to keep them
    on the list.
 
+One pin is selected everywhere: selecting rows in the watch list selects
+their pads in KiCad and highlights the pin in the chip view; selecting a pad
+in KiCad (or a pin in the chip view) selects its row in the watch list, if
+it is on the list.
+
 The line at the top of the Pins tab shows what is being sampled and lets you
 set the sampling interval. The values are for looking at, not for timing
 measurements: depending on the adapter, a few to a few tens of samples per
 second are possible.
+
+## Chip view
+
+**Chip view...** (top right) opens a separate window that draws one chip of
+the chain with the live state of all its pins: drives 1 / 0, reads 1 / 0
+(output off), toggling (drawn half 1, half 0), not sampled; JTAG, power and
+pins without boundary-scan cells in their own colours (legend below the
+drawing). Choose
+the chip at the top; it needs a BSDL file and a reference (JTAG chain tab).
+
+![Chip view of an XC7S25 (CSGA225): pins coloured by their live state](doc/chip_view.png)
+
+- **Layout:** BSDL files describe pins, not the package, so the layout is
+  guessed from the pin names: ball names (A1, AB12) give a BGA grid, numbers
+  a quad package with the pins spread evenly over four sides, pin 1 top left,
+  counter-clockwise. If that is wrong, set the layout: BGA, quad (optionally
+  with the pins per side, e.g. `30,20,30,20` for left, bottom, right, top) or
+  dual (SOIC, TSSOP). It is saved per chip.
+- **Click a pin:** it becomes the selected pad in the Pins tab (until you
+  select something else in KiCad), is selected on the board if the board has
+  it, and in the watch list if it is on it. **Ctrl+click** selects several
+  pins. Pins selected elsewhere are highlighted if they belong to the chip
+  shown (the view does not switch chips by itself). **Right-click:** add the
+  selected pins to the watch list, or drive them (EXTEST, with the usual setup
+  and review).
+- **Without a board** (chip not on the open KiCad board, or no KiCad at all)
+  the window says so in red: the plugin cannot know what the pins are
+  connected to, so the EXTEST review cannot point out pins on nets either.
+  Check the board yourself before you drive pins.
+
+**Without KiCad:** start the plugin directly – it is an ordinary program in
+the plugin folder the install step printed, e.g.
+`~/.local/share/kicad/9.0/plugins/com.github.danselmi.kicad-bscan/kicad-bscan`
+(Linux) or `Documents\KiCad\10.0\plugins\com.github.danselmi.kicad-bscan\kicad-bscan.exe`
+(Windows). The KiCad line then says "not connected"; the JTAG chain tab, the
+Pins tab and the chip view work as usual (a reference is still needed per
+chip: any name), and the settings go to a file of their own (see above).
 
 ## Finding BSDL files
 

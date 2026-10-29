@@ -4,8 +4,10 @@
 #include <algorithm>
 #include <set>
 
+#include <wx/filename.h>
 #include <wx/intl.h>
 #include <wx/msgdlg.h>
+#include <wx/stdpaths.h>
 
 using bscan::BsdlDevice;
 using bscan::LiveSampler;
@@ -53,10 +55,61 @@ bool Session::LoadProject( const kicad::BoardState& aState )
         return false;
     }
 
-    projectFile = file;
-    config      = *cfg;
+    projectFile       = file;
+    settingsFromKiCad = true;
+    config            = *cfg;
     m_devices.clear();
     m_deviceErrors.clear();
+    return true;
+}
+
+
+std::string Session::DefaultSettingsFile()
+{
+    wxFileName file( wxStandardPaths::Get().GetUserConfigDir(),
+                     "no-project.bscan.json" );
+    file.AppendDir( "kicad-bscan" );
+    return std::string( file.GetFullPath().utf8_str() );
+}
+
+
+bool Session::UseSettingsFile( const std::string& aFile )
+{
+    auto cfg = bscan::LoadProjectConfig( aFile );   // a missing file gives the defaults
+
+    if( !cfg )
+    {
+        wxMessageBox( wxString::Format( _( "Could not read the settings:\n%s" ),
+                                        fromUtf8( cfg.error() ) ),
+                      _( "Boundary Scan" ), wxOK | wxICON_WARNING, m_parent );
+        return false;
+    }
+
+    projectFile       = aFile;
+    settingsFromKiCad = false;
+    config            = *cfg;
+    m_devices.clear();
+    m_deviceErrors.clear();
+    return true;
+}
+
+
+bool Session::SaveSettingsAs( const std::string& aFile )
+{
+    std::string previous = projectFile;
+    projectFile          = aFile;
+    settingsFromKiCad    = false;
+
+    // BSDL paths are stored relative to the new file's folder where possible
+    if( auto r = bscan::SaveProjectConfig( projectFile, config ); !r )
+    {
+        projectFile = previous;
+        wxMessageBox( wxString::Format( _( "Could not save the settings:\n%s" ),
+                                        fromUtf8( r.error() ) ),
+                      _( "Boundary Scan" ), wxOK | wxICON_ERROR, m_parent );
+        return false;
+    }
+
     return true;
 }
 
@@ -70,6 +123,10 @@ void Session::Save()
 
         return;
     }
+
+    // The default file's folder may not exist yet
+    wxFileName::Mkdir( wxFileName( fromUtf8( projectFile ) ).GetPath(), wxS_DIR_DEFAULT,
+                       wxPATH_MKDIR_FULL );
 
     if( auto r = bscan::SaveProjectConfig( projectFile, config ); !r )
     {
@@ -163,7 +220,7 @@ TapAssignment& Session::AssignmentFor( const TapInfo& aTap )
     if( TapAssignment* a = config.Find( aTap.name ) )
         return *a;
 
-    config.taps.push_back( TapAssignment{ aTap.name, aTap.idcode, "", "", "", {} } );
+    config.taps.push_back( TapAssignment{ aTap.name, aTap.idcode, "", "", "", {}, "" } );
     return config.taps.back();
 }
 
@@ -567,4 +624,67 @@ TestRolesFunction Session::TestRolesFor( const std::string& aTap )
 
         return std::map<std::string, bscan::PinTestRole>{};   // not part of the test
     };
+}
+
+
+Session::ShownPad Session::SelectedPad() const
+{
+    ShownPad shown;
+
+    if( pickedPin )
+    {
+        shown.status       = kicad::BoardState::Status::PadSelected;
+        shown.pad          = *pickedPin;
+        shown.footprintRef = pickedPin->reference;
+        shown.fromChipView = true;
+        return shown;
+    }
+
+    shown.status       = board.status;
+    shown.pad          = board.pad;
+    shown.padCount     = board.padCount;
+    shown.footprintRef = board.footprintRef;
+    shown.detail       = board.detail;
+    return shown;
+}
+
+
+void Session::PickPins( const std::vector<PadKey>& aPads, const kicad::PadInfo& aPicked )
+{
+    pickedPin = aPicked;
+
+    std::vector<PadKey> onBoard;
+
+    for( const PadKey& p : aPads )
+        if( auto it = board.padNets.find( p.first );
+            it != board.padNets.end() && it->second.contains( p.second ) )
+            onBoard.push_back( p );
+
+    m_requestedSelection = std::set<PadKey>( onBoard.begin(), onBoard.end() );
+
+    if( watcher && !onBoard.empty() )
+        watcher->SelectPads( onBoard );
+}
+
+
+void Session::ClearPick()
+{
+    pickedPin.reset();
+    m_requestedSelection.clear();
+
+    if( watcher )
+        watcher->SelectPads( {} );
+}
+
+
+bool Session::IsOwnSelection( const std::vector<kicad::PadInfo>& aPads )
+{
+    std::set<PadKey> pads;
+
+    for( const kicad::PadInfo& p : aPads )
+        pads.insert( { p.reference, p.number } );
+
+    bool own = !m_requestedSelection.empty() && pads == m_requestedSelection;
+    m_requestedSelection.clear();
+    return own;
 }

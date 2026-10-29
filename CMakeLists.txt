@@ -123,7 +123,8 @@ add_library(bscan_core STATIC
     src/bscan/bsdl_index.cpp
     src/bscan/interconnect.cpp
     src/bscan/interconnect_job.cpp
-    src/bscan/interconnect_session.cpp)
+    src/bscan/interconnect_session.cpp
+    src/bscan/package_layout.cpp)
 target_include_directories(bscan_core PUBLIC src)
 target_link_libraries(bscan_core PUBLIC bsdl PRIVATE nlohmann_json::nlohmann_json)
 if(WIN32)

@@ -9,6 +9,8 @@ add_executable(kicad-bscan WIN32
     interconnect_page.cpp
     bsdl_dialogs.cpp
     chain_page.cpp
+    chip_canvas.cpp
+    chip_view.cpp
     main_frame.cpp
     pins_page.cpp
     session.cpp
