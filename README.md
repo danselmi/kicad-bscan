@@ -18,8 +18,10 @@ live values in the Pins tab.*
 ## What it does
 
 - **Live pin values (SAMPLE):** input level and output state (drives 0 / 1 /
-  off) of the selected pad, without disturbing the running chip. Selecting a
-  pin in the schematic works too: KiCad's cross-probing selects its pad.
+  off) of the selected pad, without disturbing the running chip. Snapshots
+  taken every 50 ms to 1 s, so static levels and slow signals – not a logic
+  analyzer for timing or glitches. Selecting a pin in the schematic works
+  too: KiCad's cross-probing selects its pad.
 - **Watch list:** keep any number of pins visible, independent of the
   selection. Add the pads selected in KiCad with one click (Ctrl+click selects
   several).
